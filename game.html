@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Button Clicker</title>
+    <style>
+        body { text-align: center; padding-top: 50px; background: #222; color: white; }
+        button { font-size: 2rem; padding: 10px 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Score: <span id="score">0</span></h1>
+    <button onclick="updateScore()">CLICK THE BUTTON!</button>
+    <br><br>
+    <a href="index.html" style="color: #00ff88;">Back to Lobby</a>
+
+    <script>
+        let count = 0;
+        function updateScore() {
+            count++;
+            document.getElementById('score').innerText = count;
+        }
+    </script>
+</body>
+</html>
