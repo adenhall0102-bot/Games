@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neon Jumper</title>
+    <style>
+        body { margin: 0; background: #111; color: white; text-align: center; font-family: sans-serif; overflow: hidden; }
+        canvas { border: 4px solid #00ff88; background: #000; display: block; margin: 20px auto; }
+    </style>
+</head>
+<body>
+    <h1>Neon Jumper</h1>
+    <p>Use <b>Arrow Keys</b> or <b>WASD</b> to move and jump!</p>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <a href="index.html" style="color: #00ff88;">Back to Lobby</a>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game Constants
+        const gravity = 0.8;
+        const friction = 0.8;
+        const player = {
+            x: 50,
+            y: 300,
+            width: 30,
+            height: 30,
+            speed: 5,
+            velX: 0,
+            velY: 0,
+            jumping: false,
+            color: "#00ff88"
+        };
+
+        const platforms = [
+            { x: 0, y: 380, width: 800, height: 20 }, // Floor
+            { x: 300, y: 280, width: 150, height: 20 },
+            { x: 100, y: 200, width: 150, height: 20 },
+            { x: 500, y: 150, width: 150, height: 20 }
+        ];
+
+        const keys = {};
+
+        window.addEventListener("keydown", (e) => keys[e.code] = true);
+        window.addEventListener("keyup", (e) => keys[e.code] = false);
+
+        function update() {
+            // Check Inputs
+            if (keys["ArrowUp"] || keys["KeyW"]) {
+                if (!player.jumping) {
+                    player.velY = -15; // Jump strength
+                    player.jumping = true;
+                }
+            }
+            if (keys["ArrowLeft"] || keys["KeyA"]) {
+                if (player.velX > -player.speed) player.velX--;
+            }
+            if (keys["ArrowRight"] || keys["KeyD"]) {
+                if (player.velX < player.speed) player.velX++;
+            }
+
+            // Apply Physics
+            player.velX *= friction;
+            player.velY += gravity;
+            player.x += player.velX;
+            player.y += player.velY;
+
+            // Platform Collisions
+            player.jumping = true; 
+            for (let plat of platforms) {
+                if (player.x < plat.x + plat.width &&
+                    player.x + player.width > plat.x &&
+                    player.y < plat.y + plat.height &&
+                    player.y + player.height > plat.y) {
+                    
+                    // Basic floor collision logic
+                    if (player.velY > 0) {
+                        player.jumping = false;
+                        player.velY = 0;
+                        player.y = plat.y - player.height;
+                    }
+                }
+            }
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Platforms
+            ctx.fillStyle = "#555";
+            platforms.forEach(plat => {
+                ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+            });
+
+            // Draw Player
+            ctx.fillStyle = player.color;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            ctx.shadowBlur = 0; // Reset shadow
+        }
+
+        update();
+    </script>
+</body>
+</html>
